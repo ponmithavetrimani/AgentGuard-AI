@@ -1,6 +1,6 @@
 import { Agent, Tool, TestScenario, Evaluation, TestRun, Failure, VersionComparison } from "../types";
 
-const API_BASE = "https://agentguard-ai-0yjp.onrender.com/api";
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || "https://agentguard-ai-0yjp.onrender.com").replace(/\/$/, "") + "/api";
 
 export const api = {
   // --- AGENTS ---
