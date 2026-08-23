@@ -1,6 +1,6 @@
 import { Agent, Tool, TestScenario, Evaluation, TestRun, Failure, VersionComparison } from "../types";
 
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = "https://agentguard-ai-0yjp.onrender.com/api";
 
 export const api = {
   // --- AGENTS ---
