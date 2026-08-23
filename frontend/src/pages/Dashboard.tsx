@@ -15,6 +15,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ agentId, onNavigate }) => 
 
   useEffect(() => {
     async function loadData() {
+      if (!agentId || agentId === 0) {
+        setLoading(false);
+        setActiveAgent(null);
+        return;
+      }
       setLoading(true);
       try {
         // Step 1: Load agent details

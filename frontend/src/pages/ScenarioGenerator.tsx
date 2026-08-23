@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { api } from "../services/api";
-import { Terminal, Settings2, Sliders, ArrowRight, Activity } from "lucide-react";
+import { Terminal, Settings2, Sliders, ArrowRight, Activity, Cpu } from "lucide-react";
 import { TestScenario } from "../types";
 
 interface ScenarioGeneratorProps {
@@ -30,6 +30,10 @@ export const ScenarioGenerator: React.FC<ScenarioGeneratorProps> = ({ agentId, o
   };
 
   const handleGenerate = async () => {
+    if (!agentId || agentId === 0) {
+      alert("No agent selected. Please select an active agent first.");
+      return;
+    }
     setGenerating(true);
     try {
       const generated = await api.generateScenarios(agentId, testCount, selectedCategories);
@@ -52,6 +56,22 @@ export const ScenarioGenerator: React.FC<ScenarioGeneratorProps> = ({ agentId, o
       default: return "bg-slate-50 text-slate-700 border-slate-200";
     }
   };
+
+  if (!agentId || agentId === 0) {
+    return (
+      <div className="max-w-4xl mx-auto p-6 space-y-6">
+        <div className="p-8 text-center space-y-4 max-w-md mx-auto select-none pt-20">
+          <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-[#64748B] mx-auto">
+            <Cpu className="w-8 h-8" />
+          </div>
+          <h3 className="text-[18px] font-black text-[#18152B]">No Agent Selected</h3>
+          <p className="text-[14px] text-[#64748B] font-semibold leading-relaxed">
+            Please select an active agent from the header dropdown to generate attack scenarios.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">

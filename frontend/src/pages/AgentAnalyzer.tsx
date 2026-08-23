@@ -15,6 +15,10 @@ export const AgentAnalyzer: React.FC<AgentAnalyzerProps> = ({ agentId, onNavigat
 
   useEffect(() => {
     async function runScan() {
+      if (!agentId || agentId === 0) {
+        setLoading(false);
+        return;
+      }
       try {
         const results = await api.analyzeAgent(agentId);
         setAnalysis(results);
@@ -33,6 +37,20 @@ export const AgentAnalyzer: React.FC<AgentAnalyzerProps> = ({ agentId, onNavigat
     }
     runScan();
   }, [agentId]);
+
+  if (!agentId || agentId === 0) {
+    return (
+      <div className="p-8 text-center space-y-4 max-w-md mx-auto select-none pt-20">
+        <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-[#64748B] mx-auto">
+          <Cpu className="w-8 h-8" />
+        </div>
+        <h3 className="text-[18px] font-black text-[#18152B]">No Agent Selected</h3>
+        <p className="text-[14px] text-[#64748B] font-semibold leading-relaxed">
+          Please select an active agent from the header dropdown to run a static guardrail scan.
+        </p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

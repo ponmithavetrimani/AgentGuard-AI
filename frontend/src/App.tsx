@@ -40,8 +40,39 @@ function MainAppContent() {
 
   const navigateTo = (page: string, newParams?: any) => {
     setCurrentPage(page);
-    if (newParams) {
-      setParams((prev: any) => ({ ...prev, ...newParams }));
+    
+    const protectedPages = [
+      "dashboard", "analyzer", "scenarios", "redteam", "sandbox", 
+      "results", "compare", "report"
+    ];
+    
+    if (protectedPages.includes(page)) {
+      setParams((prev: any) => {
+        let targetId = prev.agentId;
+        if (newParams && newParams.agentId !== undefined) {
+          targetId = newParams.agentId;
+        }
+        
+        if (targetId === 0 || !targetId) {
+          const savedId = localStorage.getItem("ag_current_agent_id");
+          const parsedSavedId = savedId ? Number(savedId) : 0;
+          if (parsedSavedId && parsedSavedId !== 0 && agents.some(a => a.id === parsedSavedId)) {
+            targetId = parsedSavedId;
+          } else if (agents.length > 0) {
+            targetId = agents[0].id;
+          }
+        }
+        
+        if (targetId && targetId !== 0) {
+          localStorage.setItem("ag_current_agent_id", String(targetId));
+        }
+        
+        return { ...prev, ...newParams, agentId: targetId };
+      });
+    } else {
+      if (newParams) {
+        setParams((prev: any) => ({ ...prev, ...newParams }));
+      }
     }
   };
 
@@ -56,12 +87,12 @@ function MainAppContent() {
         const savedId = localStorage.getItem("ag_current_agent_id");
         if (savedId) {
           const idNum = Number(savedId);
-          if (idNum === 1) {
-            localStorage.removeItem("ag_current_agent_id");
-            setParams((prev: any) => ({ ...prev, agentId: 0 }));
-          } else if (list.some(a => a.id === idNum)) {
+          if (list.some(a => a.id === idNum)) {
             setParams((prev: any) => ({ ...prev, agentId: idNum }));
           }
+        } else if (list.length > 0) {
+          setParams((prev: any) => ({ ...prev, agentId: list[0].id }));
+          localStorage.setItem("ag_current_agent_id", String(list[0].id));
         }
       } catch (e) {
         console.error("Failed to load agents in app root:", e);
