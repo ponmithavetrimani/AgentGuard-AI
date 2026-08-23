@@ -1,4 +1,5 @@
 import logging
+import datetime
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database.connection import engine, Base, SessionLocal
@@ -17,10 +18,23 @@ app = FastAPI(
     version="1.0.0"
 )
 
+import os
+
 # Enable CORS for the React Frontend
+frontend_url = os.getenv("FRONTEND_URL")
+origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000",
+]
+if frontend_url:
+    for url in frontend_url.split(","):
+        origins.append(url.strip())
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For hackathon/MVP demo ease
+    allow_origins=origins if frontend_url else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -106,4 +120,10 @@ def root_check():
         "status": "ONLINE",
         "service": "AgentGuard AI Backend Services",
         "timestamp": datetime.datetime.now().isoformat()
+    }
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "ok"
     }
